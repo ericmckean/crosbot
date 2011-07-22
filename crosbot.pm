@@ -240,24 +240,32 @@ sub line {
 sub connect {
 	my ($self) = @_;
 
-	print "crosbot: connect\n";
+	while (1) {
+		print "crosbot: connect\n";
 
-	tcp_connect($self->{host}, $self->{port}, Coro::rouse_cb);
-	$self->{sock} = unblock +(Coro::rouse_wait)[0];
+		tcp_connect($self->{host}, $self->{port}, Coro::rouse_cb);
+		$self->{sock} = unblock +(Coro::rouse_wait)[0];
+		if (not $self->{sock}) {
+			sleep 60;
+			next;
+		}
 
-	$self->raw('PASS %s:%s', $self->{nick}, $self->{pass});
-	$self->raw('NICK %s', $self->{nick});
-	$self->raw('USER %s "" "" :%s', $self->{user}, $self->{name});
+		$self->raw('PASS %s:%s', $self->{nick}, $self->{pass});
+		$self->raw('NICK %s', $self->{nick});
+		$self->raw('USER %s "" "" :%s', $self->{user}, $self->{name});
 
-	my $s = $self->{sock};
-	while (my $l = <$s>) {
-		$l =~ s/\r?\n//;
-		$self->line($l);
+		my $s = $self->{sock};
+		while (my $l = <$s>) {
+			$l =~ s/\r?\n//;
+			$self->line($l);
+		}
+		sleep 60;
 	}
 }
 
 sub run {
 	my ($self) = @_;
+	print "running...\n";
 	async { $self->connect };
 }
 
