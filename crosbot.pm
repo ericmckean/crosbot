@@ -57,7 +57,7 @@ sub cmd_announce {
 
 sub cmd_help {
 	my ($self, $src, $dest, $rest) = @_;
-	$self->reply('admin [[+-]<nick>]*, announce [[+-]<class>]*, help, ping,	quiet, speak, stat <stat-name>');
+	$self->reply('admin [[+-]<nick>]*, announce [[+-]<stat>]*, help, ping, quiet, speak, stat <stat-name>');
 }
 
 sub cmd_ping {
@@ -166,13 +166,12 @@ sub raw {
 };
 
 sub putstat {
-	my ($self, $class, $name, $val) = @_;
+	my ($self, $name, $val) = @_;
 	printf "crosbot: putstat %s '%s'\n", $name, $val;
 	if ($self->{stats}->{$name} eq $val) { return; }
 	$self->{stats}->{$name} = $val;
-	if (not exists $self->{announce}->{$class}) { return; }
 
-	foreach my $c (@{$self->{announce}->{$class}}) {
+	foreach my $c (@{$self->{announce}->{$name}}) {
 		if (defined($self->{quiets}->{lc $c})) { next; }
 		$self->raw("PRIVMSG %s :%s became '%s'", $c, $name, $val);
 	}
