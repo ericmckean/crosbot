@@ -200,6 +200,11 @@ sub cmd {
 	if (exists $self->{cmds}->{$cmd}) {
 		my $c = $self->{cmds}->{$cmd};
 		$c->($self, $src, $dest, $rest);
+	} elsif ($cmd =~ /\?$/) {
+		$cmd =~ s/\?$//;
+		if (exists $self->{stats}->{$cmd}) {
+			$self->reply("$cmd: " . $self->{stats}->{$cmd});
+		}
 	} else {
 		$self->reply("No such command '%s'. Try 'help'.", $cmd);
 	}
