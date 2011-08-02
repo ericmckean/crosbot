@@ -3,36 +3,43 @@ package stats::sheriff;
 use Coro;
 use Coro::Handle;
 use Coro::Timer qw(sleep);
+use Fcntl;
 use AnyEvent::Socket;
+use IO::Handle '_IONBF';
 
-sub checkstats {
-	my ($bot) = @_;
+sub checkstat {
+	my ($bot, $suffix) = @_;
 	my $g = tcp_connect "build.chromium.org", 80, Coro::rouse_cb;
 	my $fh = unblock +(Coro::rouse_wait)[0];
-
-	print "sheriff: ready...\n";
+	my $sheriffs = '?';
 
 	if (not $fh) {
 		$bot->putstat('sheriff', 'sheriff', '?');
 		return;
 	}
 
-	print $fh "GET /p/chromiumos/sheriff.js HTTP/1.1\015\012";
+	print $fh "GET /p/chromiumos/sheriff$suffix.js HTTP/1.1\015\012";
 	print $fh "Host: build.chromium.org\015\012";
 	print $fh "\015\012";
 
-	print "sheriff: request...\n";
-
-	local $/ = undef;
-	while (my $l = <$fh>) {
-		print "Response: '$l'\n";
-		if ($l =~ /^document\.write\('(.*)'\)/) {
-			my $sheriffs = $1;
-			$bot->putstat('sheriff', 'sheriff', $sheriffs);
-			return;
-		}
+	my $buf;
+	my $n;
+	while ($fh->read($n, 1) and $n ne ')') {
+		$buf .= $n;
 	}
-	$bot->putstat('sheriff', 'sheriff', '?');
+
+	if ($buf =~ /document\.write\('(.*)'/) {
+		$sheriffs = $1;
+	}
+
+	return $sheriffs;
+}
+
+sub checkstats {
+	my ($bot) = @_;
+	my $s0 = checkstat($bot, '');
+	my $s1 = checkstat($bot, '2');
+	$bot->putstat('sheriffs', 'sheriffs', "$s0, $s1");
 }
 
 sub dostats {

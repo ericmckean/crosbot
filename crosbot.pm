@@ -178,6 +178,11 @@ sub putstat {
 	}
 }
 
+sub stat {
+	my ($self, $name) = @_;
+	return $self->{stats}->{$name};
+}
+
 sub reply {
 	my ($self, $fmt, @args) = @_;
 	if (defined $self->{cmdchan} and $self->{quiets}->{lc($self->{cmdchan})}) {
