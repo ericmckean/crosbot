@@ -14,8 +14,7 @@ sub checkstat {
 	my $sheriffs = '?';
 
 	if (not $fh) {
-		$bot->putstat('sheriff', 'sheriff', '?');
-		return;
+		return $sheriffs;
 	}
 
 	print $fh "GET /p/chromiumos/sheriff$suffix.js HTTP/1.1\015\012";
@@ -39,7 +38,7 @@ sub checkstats {
 	my ($bot) = @_;
 	my $s0 = checkstat($bot, '');
 	my $s1 = checkstat($bot, '2');
-	$bot->putstat('sheriffs', 'sheriffs', "$s0, $s1");
+	$bot->putstat('sheriffs', "$s0, $s1");
 }
 
 sub dostats {

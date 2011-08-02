@@ -11,7 +11,7 @@ sub checkstats {
 	my $fh = unblock +(Coro::rouse_wait)[0];
 
 	if (not $fh) {
-		$bot->putstat('commits', 'last-commit', '?');
+		$bot->putstat('last-commit', '?');
 		return;
 	}
 
@@ -26,11 +26,11 @@ sub checkstats {
 			$who =~ s/&gt;/>/g;
 			$who =~ s/&quot;/"/g;
 			$who =~ s/&#39;/'/g;
-			$bot->putstat('commits', 'last-commit', "$hash: $who '$title'");
+			$bot->putstat('last-commit', "$hash: $who '$title'");
 			return;
 		}
 	}
-	$bot->putstat('commits', 'last-commit', '?');
+	$bot->putstat('last-commit', '?');
 }
 
 sub dostats {

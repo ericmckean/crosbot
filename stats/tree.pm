@@ -11,7 +11,7 @@ sub checkstat {
 	my $fh = unblock +(Coro::rouse_wait)[0];
 
 	if (not $fh) {
-		$bot->putstat('tree-all', 'tree', '?');
+		$bot->putstat('tree', '?');
 		return;
 	}
 
@@ -29,13 +29,12 @@ sub checkstat {
 			$s =~ s/&lt;/</g;
 			$s =~ s/&gt;/>/g;
 			$s =~ s/&#39;/'/g;
-			$bot->putstat('tree', 'tree', $s);
-			$bot->putstat('tree-all', 'tree', $s);
+			$bot->putstat('tree', $s);
 			return;
 		}
 	}
 
-	$bot->putstat('tree-all', 'tree', '?');
+	$bot->putstat('tree', '?');
 }
 
 sub dostats {

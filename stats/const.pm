@@ -2,6 +2,7 @@ package stats::const;
 
 my $stats = {
 	'troopers' => 'djmm, scottz, bradnelson, maruel (EST), kliegs (EST)',
+	'waterfall' => 'http://build.chromium.org/p/chromiumos/waterfall',
 };
 
 sub addto {
