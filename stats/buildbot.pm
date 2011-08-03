@@ -44,6 +44,7 @@ sub checkbots {
 	foreach my $b (@bots) {
 		my $r = checkbot($b);
 		$states->{$b} = $r;
+		if ($r eq '?') { next; }
 		print "$b: $r\n";
 		if ($r =~ /failed/) {
 			push @bad, $b;
