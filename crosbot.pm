@@ -55,6 +55,11 @@ sub cmd_announce {
 	$self->reply('announcing %s', (@p ? join(' ', @p) : '<none>'));
 }
 
+sub cmd_botsnack {
+	my ($self, $src, $dest, $rest) = @_;
+	$self->reply(':)');
+}
+
 sub cmd_help {
 	my ($self, $src, $dest, $rest) = @_;
 	$self->reply('admin [[+-]<nick>]*, announce [[+-]<stat>]*, help, ping, quiet, speak, stat <stat-name>');
@@ -133,6 +138,7 @@ sub new {
 	$self->{cmds} = {
 		admin => \&cmd_admin,
 		announce => \&cmd_announce,
+		botsnack => \&cmd_botsnack,
 		help => \&cmd_help,
 		ping => \&cmd_ping,
 		quiet => \&cmd_quiet,
