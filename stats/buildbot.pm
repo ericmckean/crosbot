@@ -5,8 +5,8 @@ use Coro::Handle;
 use Coro::Timer qw(sleep);
 use AnyEvent::Socket;
 
-sub checkstats {
-	my ($bot, $bbname) = @_;
+sub checkbot {
+	my ($bbname) = @_;
 	my $g = tcp_connect "build.chromium.org", 80, Coro::rouse_cb;
 	my $fh = unblock +(Coro::rouse_wait)[0];
 
@@ -15,8 +15,7 @@ sub checkstats {
 	$bbname =~ s/ /%20/g;
 
 	if (not $fh) {
-		$bot->putstat('buildbots', $fname, '?');
-		return;
+		return "?";
 	}
 
 	print $fh "GET /p/chromiumos/builders/$bbname HTTP/1.1\015\012";
@@ -27,22 +26,41 @@ sub checkstats {
 
 	while (my $l = <$fh>) {
 		$l =~ s/\r?\n//;
-		print "Response: '$l'\n";
 		if ($l =~ /<h2>no current builds<\/h2>/i) { $idle = ' [idle]'; }
 		if ($l =~ /\#(\d+)<\/a>: (.+)<\/li>/i) {
-			$bot->putstat('buildbots', $fname, "$1: $2$idle");
-			return;
+			return "$2$idle";
 		}
 	}
-	$bot->putstat('buildbots', $fname, '?');
+	return "?";
+}
+
+sub checkbots {
+	my ($bot) = @_;
+	my @bots = ('x86 generic full', 'x86 pineview binary', 'x86 pineview full',
+	            'x86 generic pre flight queue', 'arm generic binary',
+	            'arm generic full', 'arm tegra2 binary', 'arm tegra2 full');
+	my $states;
+	my @bad;
+	foreach my $b (@bots) {
+		my $r = checkbot($b);
+		$states->{$b} = $r;
+		print "$b: $r\n";
+		if ($r =~ /failed/) {
+			push @bad, $b;
+		}
+		sleep 1;
+	}
+
+	$bot->putstat('bots', sprintf("%d total, %d bad", scalar(@bots), scalar(@bad)));
+	$bot->putstat('sickbots', join(', ', @bad));
 }
 
 sub dostats {
 	my ($bot, $bbname) = @_;
-	sleep(int(rand(10)));
+	checkbots $bot;
 	while (1) {
 		sleep 15;
-		checkstats $bot, $bbname;
+		checkbots $bot;
 	}
 }
 

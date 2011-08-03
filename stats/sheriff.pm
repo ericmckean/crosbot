@@ -45,7 +45,7 @@ sub dostats {
 	my ($bot) = @_;
 	checkstats $bot;
 	while (1) {
-		sleep 15;
+		sleep 60;
 		checkstats $bot;
 	}
 }

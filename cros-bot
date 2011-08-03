@@ -6,23 +6,17 @@ use crosbot;
 
 use stats::buildbot;
 use stats::commit;
+use stats::const;
 use stats::sheriff;
 use stats::tree;
 
-my $b = crosbot->new(host => 'irc.freenode.net', nick => 'crosbot',
-                     chans => [ '#chromium-os' ], owner => 'ellyjones',
+my $b = crosbot->new(host => 'irc.freenode.net', nick => 'crosbot-test',
+                     chans => [ '#chromium-os-test' ], owner => 'ellyjones',
 	             pass => '');
 stats::tree->addto($b);
-stats::buildbot->addto($b, 'x86 generic full');
-stats::buildbot->addto($b, 'x86 pineview binary');
-stats::buildbot->addto($b, 'x86 pineview full');
-stats::buildbot->addto($b, 'x86 generic pre flight queue');
-stats::buildbot->addto($b, 'arm generic binary');
-stats::buildbot->addto($b, 'arm generic full');
-stats::buildbot->addto($b, 'arm tegra2 binary');
-stats::buildbot->addto($b, 'arm tegra2 full');
-stats::commit->addto($b);
-# stats::sheriff->addto($b);
+stats::buildbot->addto($b);
+stats::const->addto($b);
+stats::sheriff->addto($b);
 $b->run();
 
 schedule;
