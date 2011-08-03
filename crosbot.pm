@@ -128,7 +128,7 @@ sub new {
 	$self->{admins} = delete $conf{admins} || [];
 	$self->{stats} = {};
 	$self->{quiets} = {};
-	$self->{announce} = {};
+	$self->{announce} = { 'tree' => '#chromium-os' };
 
 	$self->{cmds} = {
 		admin => \&cmd_admin,

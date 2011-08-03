@@ -12,7 +12,7 @@ use stats::tree;
 
 my $b = crosbot->new(host => 'irc.freenode.net', nick => 'crosbot-test',
                      chans => [ '#chromium-os-test' ], owner => 'ellyjones',
-	             pass => '');
+	             pass => '', admins => [ 'elly' ]);
 stats::tree->addto($b);
 stats::buildbot->addto($b);
 stats::const->addto($b);
