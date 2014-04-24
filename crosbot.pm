@@ -3,6 +3,7 @@ package crosbot;
 use AnyEvent::Socket;
 use Coro;
 use Coro::Handle;
+use String::Util 'trim';
 
 sub cmd_admin {
 	my ($self, $src, $dest, $rest) = @_;
@@ -62,7 +63,11 @@ sub cmd_botsnack {
 
 sub cmd_help {
 	my ($self, $src, $dest, $rest) = @_;
-	$self->reply('admin [[+-]<nick>]*, announce [[+-]<stat>]*, help, ping, quiet, speak, stat <stat-name>');
+	if (trim($rest) eq 'help') {
+		$self->reply('admin [[+-]<nick>]*, announce [[+-]<stat>]*, help, ping, quiet, speak, stat <stat-name>');
+	} else {
+		$self->reply('tree sheriffs -> sheriffs, lab/test problems -> labsheriff, build/builder problems -> deputy, chrome problems -> gardener, crosbot commands -> help help');
+	}
 }
 
 sub cmd_ping {
@@ -210,7 +215,7 @@ sub cmd {
 	if (exists $self->{cmds}->{$cmd}) {
 		my $c = $self->{cmds}->{$cmd};
 		$c->($self, $src, $dest, $rest);
-	} elsif ($cmd =~ /\?$/) {
+	} elsif ($cmd =~ /\?$/ or exists $self->{stats}->{$cmd}) {
 		$cmd =~ s/\?$//;
 		if (exists $self->{stats}->{$cmd}) {
 			$self->reply("$cmd: " . $self->{stats}->{$cmd});

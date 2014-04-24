@@ -1,7 +1,7 @@
 package stats::const;
 
 my $stats = {
-	'troopers' => 'djmm, scottz, bradnelson, maruel (EST), kliegs (EST)',
+	'troopers' => 'email chrome-infra?',
 	'waterfall' => 'http://build.chromium.org/p/chromiumos/waterfall',
 };
 
